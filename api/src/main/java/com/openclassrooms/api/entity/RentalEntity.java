@@ -3,6 +3,8 @@ package com.openclassrooms.api.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.sql.Timestamp;
+
 @Data
 @Entity
 @Table(name = "Rentals")
@@ -24,7 +26,7 @@ public class RentalEntity {
 
         private Integer owner_id;
 
-        private String created_at;
+        private Timestamp created_at;
 
-        private String updated_at;
+        private Timestamp updated_at;
 }

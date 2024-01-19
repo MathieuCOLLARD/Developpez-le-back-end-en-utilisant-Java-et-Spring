@@ -1,6 +1,5 @@
 package com.openclassrooms.api.services;
 
-import com.openclassrooms.api.exception.AuthenticationException;
 import com.openclassrooms.api.response.UserResponse;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +14,7 @@ import lombok.Data;
 
 import java.security.Principal;
 import java.sql.Timestamp;
+import java.util.Optional;
 
 @Data
 @Service
@@ -25,10 +25,14 @@ public class UserServiceImpl implements UserService {
 	
 	@Autowired
     private ModelMapper modelMapper;
-	
+
 	@Autowired
 	private JWTService jwtService;
-	
+
+	/**
+	 * @param userDTO
+	 * @return String
+	 */
 	@Override
 	public String createUser(UserDTO userDTO) {
 		UserEntity user = modelMapper.map(userDTO, UserEntity.class);
@@ -40,21 +44,38 @@ public class UserServiceImpl implements UserService {
 		return jwtService.generateToken(userDTO);
 	}
 
+	/**
+	 * @param userDTO
+	 * @return Optional<String>
+	 */
 	@Override
-	public String login(UserDTO userDTO) {
+	public Optional<String> login(UserDTO userDTO) {
 		UserEntity user = userRepository.findByEmail(userDTO.getEmail());
 		if(user == null) {
-			throw new AuthenticationException("error");
+			return Optional.empty();
 		}
 		final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 		if(!passwordEncoder.matches(userDTO.getPassword(), user.getPassword())) {
-			throw new AuthenticationException("error");
+			return Optional.empty();
 		}
-		return jwtService.generateToken(userDTO);
+		return Optional.of(jwtService.generateToken(userDTO));
 	}
 
+	/**
+	 * @param user
+	 * @return UserResponse
+	 */
 	@Override
 	public UserResponse me(Principal user) {
 		return modelMapper.map(userRepository.findByEmail(user.getName()), UserResponse.class);
+	}
+
+	/**
+	 * @param id
+	 * @return UserResponse
+	 */
+	@Override
+	public UserResponse getUser(Long id) {
+		return modelMapper.map(userRepository.findById(id).get(), UserResponse.class);
 	}
 }

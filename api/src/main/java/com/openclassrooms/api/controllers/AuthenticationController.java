@@ -1,44 +1,52 @@
 package com.openclassrooms.api.controllers;
 
-import com.openclassrooms.api.exception.AuthenticationException;
+import com.openclassrooms.api.exception.Error;
 import com.openclassrooms.api.response.UserResponse;
-import org.apache.commons.lang3.ObjectUtils;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import com.openclassrooms.api.dto.UserDTO;
-import com.openclassrooms.api.exception.UserException;
 import com.openclassrooms.api.response.TokenResponse;
 import com.openclassrooms.api.services.UserService;
 
 import java.security.Principal;
+import java.util.HashMap;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api")
 public class AuthenticationController {
 	
 	@Autowired
 	private UserService userService;
 	
-	@PostMapping("/register")
-	public ResponseEntity<TokenResponse> register(@RequestBody UserDTO userDTO) {
-		if(ObjectUtils.isEmpty(userDTO.getName()) || ObjectUtils.isEmpty(userDTO.getPassword()) || 
-				ObjectUtils.isEmpty(userDTO.getEmail())) {
-			throw new UserException("Tous les champs sont obligatoires");
+	@PostMapping("/auth/register")
+	public ResponseEntity<Object> register(@Valid @RequestBody UserDTO userDTO, Errors errors) {
+		if(errors.hasErrors()) {
+			return new ResponseEntity<>(new HashMap<>(), HttpStatus.BAD_REQUEST);
 		}
 		return ResponseEntity.ok(new TokenResponse(userService.createUser(userDTO)));
 	}
-	@PostMapping("/login")
-	public ResponseEntity<TokenResponse> login(@RequestBody UserDTO userDTO) {
-		if(ObjectUtils.isEmpty(userDTO.getPassword()) || ObjectUtils.isEmpty(userDTO.getEmail())) {
-			throw new AuthenticationException("error");
+	@PostMapping("/auth/login")
+	public ResponseEntity<Object> login(@RequestBody UserDTO userDTO) {
+		Optional<String> token = userService.login(userDTO);
+		if(token.isEmpty()) {
+			return new ResponseEntity<>(new Error("error"), HttpStatus.UNAUTHORIZED);
 		}
-		return ResponseEntity.ok(new TokenResponse(userService.login(userDTO)));
+		return ResponseEntity.ok(new TokenResponse(token.get()));
 	}
 
-	@GetMapping("/me")
+	@GetMapping("/auth/me")
 	public ResponseEntity<UserResponse> me(Principal principalUser){
 		return ResponseEntity.ok(userService.me(principalUser));
+	}
+
+	@GetMapping("/user/{id}")
+	public ResponseEntity<UserResponse> getUser(@PathVariable Long id){
+		return ResponseEntity.ok(userService.getUser(id));
 	}
 }

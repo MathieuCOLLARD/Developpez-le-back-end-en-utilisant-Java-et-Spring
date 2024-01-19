@@ -1,13 +1,13 @@
 package com.openclassrooms.api.exception;
 
-public class UserException extends RuntimeException 
+public class BadRequestException extends RuntimeException
 {
    /**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-public UserException(String s) 
+public BadRequestException(String s)
    {
       super(s);
    }
