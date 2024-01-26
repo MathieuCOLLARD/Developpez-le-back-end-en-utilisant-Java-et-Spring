@@ -17,6 +17,12 @@ Choose com.openclassrooms.api.ApiApplication file in configuration
 
 Start the project using run button in the IDE or using right click on ApiApplication.java file and 'Run ApiAppliation.main()'
 
+## Use Swagger
+
+After starting the application, you can acces to the Swagger documentation with the link:
+
+> http://localhost:8080/swagger-ui/index.html#/
+
 ## Configure the database 
 
 Download mysql with the installer :
@@ -34,7 +40,6 @@ Choose the right database using the command
 Use the script file in the angular project to create tables and dependencies :
 
 > ressources/sql/script.sql
-
 
 ## Ressources
 
