@@ -11,7 +11,11 @@ Git clone:
 
 > git clone https://github.com/MathieuCOLLARD/Developpez-le-back-end-en-utilisant-Java-et-Spring
 
-Choose com.openclassrooms.api.ApiApplication file in configuration to run the project
+
+Choose com.openclassrooms.api.ApiApplication file in configuration
+
+
+Start the project using run button in the IDE or using right click on ApiApplication.java file and 'Run ApiAppliation.main()'
 
 ## Configure the database 
 
